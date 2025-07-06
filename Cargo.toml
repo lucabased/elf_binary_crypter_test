@@ -1,0 +1,9 @@
+[package]
+name = "linux_crypter_test"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+goblin = "0.8.0"
+anyhow = "1.0"
+iced-x86 = "1.17.0"
