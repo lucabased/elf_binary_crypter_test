@@ -2,6 +2,7 @@
 
 use anyhow::Result;
 use iced_x86::{Decoder, DecoderOptions, Encoder, Instruction};
+use rand::Rng;
 
 pub mod substitutions;
 use substitutions::InstructionModifier;
@@ -9,14 +10,26 @@ use substitutions::InstructionModifier;
 /// A builder for applying a series of instruction modifications.
 pub struct Crypter {
     modifiers: Vec<Box<dyn InstructionModifier>>,
+    chance: u32,
 }
 
 impl Crypter {
-    /// Creates a new, empty `Crypter` builder.
+    /// Creates a new, empty `Crypter` builder with a default chance of 1000 (100%).
     pub fn new() -> Self {
         Self {
             modifiers: Vec::new(),
+            chance: 1000,
         }
+    }
+
+    /// Sets the probability chance for the crypter's modifications.
+    ///
+    /// # Arguments
+    ///
+    /// * `chance` - The probability (from 1 to 1000) that a modification will be applied.
+    pub fn with_chance(mut self, chance: u32) -> Self {
+        self.chance = chance.max(1).min(1000);
+        self
     }
 
     /// Adds a modifier to the crypter's pipeline.
@@ -46,7 +59,7 @@ impl Crypter {
 
         let mut modified = false;
         for modifier in &self.modifiers {
-            if modifier.apply(&mut instructions) {
+            if modifier.apply(&mut instructions, self.chance) {
                 modified = true;
                 break; // Apply only the first successful modification
             }

@@ -32,6 +32,7 @@ fn main() -> Result<()> {
 
     // Create a crypter and add the desired modifications.
     let crypter = Crypter::new()
+        .with_chance(500) // Set a 50% chance for modifications
         .with(Box::new(TestToCmp))
         .with(Box::new(AddToInc))
         .with(Box::new(XorToMov))
